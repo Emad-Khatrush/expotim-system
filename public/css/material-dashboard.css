@@ -85,6 +85,9 @@ p {
   margin-top: 0;
   margin-bottom: 1rem;
 }
+.options{
+  border: 2px solid rgba(207, 207, 207, 0.66);
+}
 
 abbr[title],
 abbr[data-original-title] {

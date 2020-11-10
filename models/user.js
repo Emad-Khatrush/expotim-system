@@ -7,6 +7,10 @@ var userSchema = new mongoose.Schema({
   lastName: {type: String, required: true},
   title: {type: String, required: true},
   phone: {type: Number, required: true},
+  city: {type: String, required: true},
+  address: {type: String, required: true},
+  status: {type: String, required: true},
+  generelField: {type: String, required: true},
   isAdmin: { type: Boolean, default: false },
   password: String
 });

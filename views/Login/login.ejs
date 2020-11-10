@@ -14,11 +14,25 @@
         <div class="col-sm-12">
           <div class="login-page">
             <div class="form">
+              <!-- flash messages -->
+              <div class="container">
+                <% if(error && error.length > 0){ %>
+                <div class="alert alert-danger" role="alert">
+                  <%= error %>
+                </div>
+              <% } %>
+              <% if(success && success.length > 0){ %>
+                <div class="alert alert-success" role="alert">
+                  <%= success %>
+                </div>
+                <% } %>
+              </div>
+              <!-- flash messages end-->
               <div class="category">
-                <a href="/employee/login">Employee</a>
+                <a href="/login">Employee</a>
                 <a href="/company/login">Company</a>
               </div>
-              <form action="/employee/login" method="POST" class="login-form">
+              <form action="/login" method="POST" class="login-form">
                 <input type="username" name="username" placeholder="Email" required/>
                 <input type="password" name="password" placeholder="password" required/>
                 <button>Login</button>
