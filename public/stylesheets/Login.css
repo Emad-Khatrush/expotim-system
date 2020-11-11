@@ -5,6 +5,11 @@
   padding: 50% 0 0;
   margin: auto;
 }
+h5{
+  margin-bottom: 20px;
+  color: #222222;
+  font-weight: bold;
+}
 .form {
   position: relative;
   z-index: 1;

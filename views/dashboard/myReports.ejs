@@ -97,7 +97,12 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title ">Today Inserted Data ( <%= dailyDataLength %> )</h4>
+                  <h4 class="card-title mt-0">
+                    Today Inserted Data ( <%= dailyDataLength %> )
+                    <% if(currentUser.isAdmin){ %>
+                      <a href="/dashboard/download/dailyData/excelsheet" class="btn btn-sm btn-success text-right"> <i class="fas fa-file-excel"></i> Export Excel </a>
+                    <% } %>
+                  </h4>
                   <p class="card-category"> Here is all the data that inserted in <%= todayDate %> </p>
                 </div>
                 <div class="card-body">
@@ -194,7 +199,7 @@
                   <h4 class="card-title mt-0">
                     All Inserted Data ( <%= fullDataLength %> )
                     <% if(currentUser.isAdmin){ %>
-                      <a href="/dashboard/download/excelsheet" class="btn btn-sm btn-success text-right"> <i class="fas fa-file-excel"></i> Export Excel </a>
+                      <a href="/dashboard/download/fullData/excelsheet" class="btn btn-sm btn-success text-right"> <i class="fas fa-file-excel"></i> Export Excel </a>
                     <% } %>
                   </h4>
                   <p class="card-category"> Here is all the data that you inserted so far</p>

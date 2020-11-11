@@ -264,7 +264,15 @@ app.post("/dashboard/changePassword", isLogin, function(req,res){
         }
         user.setPassword(req.body.password, function(err){
           user.save(function(err) {
+            if (err) {
+              req.flash("error", err.message);
+              res.redirect("/dashboard");
+            }
             req.login(user, function(err) {
+              if (err) {
+                req.flash("error", err.message);
+                res.redirect("/dashboard");
+              }
               done(err, user);
             });
           });
@@ -389,27 +397,36 @@ app.put("/dashboard/team/:id",function(req,res){
   }
 });
 // Excel Export Route: GET
-app.get('/dashboard/download/excelsheet',isLogin ,async function(req, res, next){
+app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, res, next){
   if (req.user.isAdmin) {
-    var todayDate = new Date().toLocaleDateString('tr-TR');
+    let participants;
+    if (req.params.typeData === "fullData") {
+      console.log("export fullData");
+      participants = await Participant.find({});
+    }else if (req.params.typeData === "dailyData") {
+      var todayDate = new Date().toLocaleDateString('tr-TR');
+      participants = await Participant.find({date: todayDate});
+    }else {
+      req.flash("error", "You cant export this type of format");
+      return res.redirect("back");
+    }
     var workbook = new excel.Workbook();
     var worksheet = workbook.addWorksheet("Participants");
 
     worksheet.columns = [
       { header: "Id", key: "count", width: 5 },
       { header: "Company Name", key: "company", width: 20 },
-      { header: "First Name", key: "firstName", width: 25 },
-      { header: "Last Name", key: "lastName", width: 15 },
-      { header: "Email", key: "email", width: 20 },
-      { header: "Company Adress", key: "companyAdress", width: 25 },
-      { header: "Phone Number", key: "phone", width: 15 },
-      { header: "Title", key: "title", width: 15 },
+      { header: "First Name", key: "firstName", width: 20 },
+      { header: "Last Name", key: "lastName", width: 20 },
+      { header: "Email", key: "email", width: 30 },
+      { header: "Company Adress", key: "companyAdress", width: 30 },
+      { header: "Phone Number", key: "phone", width: 20 },
+      { header: "Title", key: "title", width: 25 },
       { header: "Interested Field", key: "interestedField", width: 25 },
       { header: "Created Date", key: "date", width: 15 },
       { header: "Note", key: "note", width: 25 },
       { header: "Founder", key: "founder", width: 25 }
     ];
-    const participants = await Participant.find({});
     const users        = await User.find({});
     let count = 1;
     participants.forEach(function(participant){
