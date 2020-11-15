@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+  require('dotenv').config();
+}
+
 var express               = require("express"),
     bodyParser            = require("body-parser"),
     mongoose              = require("mongoose"),
@@ -11,7 +15,10 @@ var express               = require("express"),
     methodOverride        = require('method-override'),
     excel                 = require("exceljs"),
     nodemailer            = require('nodemailer'),
-    async                 = require("async");
+    async                 = require("async"),
+    multer                = require('multer');
+const { storage }         = require('./cloudinary');
+var upload                = multer({ storage });
 
 var app = express();
 // setup packages
@@ -63,6 +70,12 @@ app.get("/", function(req,res){
   res.redirect("/login");
 })
 app.get("/login", function(req,res){
+  let todayDate = new Date().toLocaleDateString('tr-TR');
+
+  // let firstday = new Date(todayDate.setDate(first)).toUTCString();
+  // let lastday = new Date(todayDate.setDate(last)).toUTCString();
+  // let firstDayMonth = new Date(todayDate.setDate(1));
+  // let lastDayMonth = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0)
   // var userData = new User({
   //   username: "emadkhatrush@hotmail.com",
   //   firstName: "emad",
@@ -132,22 +145,30 @@ app.get("/dashboard/add-data", isLogin,function(req,res){
 
 
 // Add Data Route: POST
-app.post("/dashboard/add-data", isLogin,function(req,res){
+app.post("/dashboard/add-data", upload.array("image"), async function(req,res){
+  const images = req.files.map(file => ({ url: file.path, filename: file.filename }));
+  console.log(req.body, req.files);
   var personData = new Participant({
     user: req.user,
     company: req.body.company,
     email: req.body.email,
+    brandName: req.body.brandName,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     companyAdress: req.body.companyAdress,
+    companiesWorkedwith: req.body.companiesWorkedWith,
+    countriesParticipated: req.body.countriesParticipated,
+    personLanguages: req.body.personLanguages,
     phone: req.body.phone,
+    businessNumber: req.body.businessNumber,
     city: req.body.city,
     title: req.body.title,
     interestedField: req.body.interestedField,
     date: new Date().toLocaleDateString('tr-TR'),
     note: req.body.note
   })
-  personData.save(function(err, data){
+  personData.images = images;
+  await personData.save(function(err, data){
     if (err) {
       req.flash("error", err.message)
       res.redirect("/dashboard/add-data");
@@ -205,6 +226,31 @@ app.get("/dashboard/myreports", isLogin,function(req,res){
     })
   }
 })
+// display report images: GET
+app.get("/dashboard/image/:id",isLogin ,function(req,res){
+  var participantId = req.params.id;
+  Participant.findById(participantId, function(err, participant){
+    if(err) {
+      console.log(err);
+      req.flash("error", err.message);
+      return res.redirect("back");
+    }else{
+      res.render("./dashboard/viewImages", {participant: participant });
+    }
+  });
+});
+// display report images: GET
+app.get("/dashboard/personalImage/:id",isLogin ,function(req,res){
+  var userId = req.params.id;
+  User.findById(userId, function(err, user){
+    if(err) {
+      req.flash("error", err.message);
+      return res.redirect("back");
+    }else{
+      res.render("./dashboard/viewPersonalImage", {user: user });
+    }
+  });
+});
 // Contact Route: Get
 app.get("/dashboard/contact", isLogin,function(req,res){
   if (!req.user.isAdmin) {
@@ -302,8 +348,13 @@ app.get("/dashboard/insert-member",isLogin,function(req,res){
 });
 
 // Insert Member Route: POST
-app.post("/dashboard/insert-member",isLogin,function(req,res){
+app.post("/dashboard/insert-member",upload.single("image"),async function(req,res){
   if (req.user.isAdmin) {
+    console.log(req.body,req.file);
+    const image ={
+      url: req.file.path,
+      filename: req.file.filename
+    }
     var userData = new User({
       username: req.body.username,
       firstName: req.body.firstName,
@@ -315,7 +366,8 @@ app.post("/dashboard/insert-member",isLogin,function(req,res){
       status: req.body.status,
       generelField: req.body.generelField
     });
-    User.register(userData, req.body.password, function(err, user){
+    userData.image = image;
+     await User.register(userData, req.body.password, function(err, user){
       if (err) {
         req.flash("error", err.message);
         return res.redirect("/dashboard/insert-member");
@@ -416,13 +468,18 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
     worksheet.columns = [
       { header: "Id", key: "count", width: 5 },
       { header: "Company Name", key: "company", width: 20 },
+      { header: "Brand Name", key: "brandName", width: 20 },
       { header: "First Name", key: "firstName", width: 20 },
       { header: "Last Name", key: "lastName", width: 20 },
       { header: "Email", key: "email", width: 30 },
       { header: "Company Adress", key: "companyAdress", width: 30 },
       { header: "Phone Number", key: "phone", width: 20 },
+      { header: "Business Number", key: "businessNumber", width: 20 },
+      { header: "Which Companies They Work with", key: "companiesWorkedwith", width: 20 },
+      { header: "Which Countries Were/Will Participating In The Exhibitions", key: "countriesParticipated", width: 20 },
+      { header: "Which Languages The Person Known", key: "personLanguages", width: 20 },
       { header: "Title", key: "title", width: 25 },
-      { header: "Interested Field", key: "interestedField", width: 25 },
+      { header: "Which Products/Sub Sectors He Is Interested With", key: "interestedField", width: 25 },
       { header: "Created Date", key: "date", width: 15 },
       { header: "Note", key: "note", width: 25 },
       { header: "Founder", key: "founder", width: 25 }

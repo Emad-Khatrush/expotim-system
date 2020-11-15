@@ -3,6 +3,11 @@ var passportLocalMongoose = require("passport-local-mongoose");
 
 var userSchema = new mongoose.Schema({
   username: {type: String, required: true},
+  image:
+      {
+        url: String,
+        filename: String
+      },
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
   title: {type: String, required: true},

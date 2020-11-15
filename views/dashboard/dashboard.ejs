@@ -19,7 +19,7 @@
           <li class="nav-item ">
             <a class="nav-link" href="/dashboard/add-data">
               <i class="material-icons">content_copy</i>
-              <p>Add Data</p>
+              <p>Insert Data</p>
             </a>
           </li>
           <li class="nav-item ">
@@ -59,10 +59,16 @@
             <strong class="text-md-left font-weight-bold"> <p> Koordinaters </p> </strong>
             <% if(koorMembers){ %>
             <% koorMembers.forEach((koorMember) => { %>
-            <li class="nav-item ">
+              <li class="nav-item ">
               <a class="nav-link" href="/dashboard/team/<%= koorMember._id %>">
-                <i class="material-icons far fa-user-circle"></i>
+              <% if(koorMember.image.url){ %>
+                  <img style="float: left; border-radius: 20px;" width="25px" height="25px" src="<%=koorMember.image.url %>" class=" mx-auto " alt="...">
+                  <p style="margin-left: 43px;"><%= koorMember.firstName %> <%= koorMember.lastName %></p>
+                <% }else{ %>
+                  <i class="material-icons far fa-user-circle"></i>
                   <p><%= koorMember.firstName %> <%= koorMember.lastName %></p>
+                <% } %>
+
               </a>
             </li>
             <%  }); %>
@@ -74,10 +80,15 @@
             <strong class="text-md-left font-weight-bold"> <p> Others Members </p> </strong>
             <% if(teamMembers){ %>
             <% teamMembers.forEach((teamMember) => { %>
-            <li class="nav-item ">
+              <li class="nav-item ">
               <a class="nav-link" href="/dashboard/team/<%= teamMember._id %>">
-                <i class="material-icons far fa-user-circle"></i>
+              <% if(teamMember.image.url){ %>
+                  <img style="float: left; border-radius: 20px;" width="25px" height="25px" src="<%= teamMember.image.url %>" class=" mx-auto " alt="...">
+                  <p style="margin-left: 43px;"><%= teamMember.firstName %> <%= teamMember.lastName %></p>
+                <% }else{ %>
+                  <i class="material-icons far fa-user-circle"></i>
                   <p><%= teamMember.firstName %> <%= teamMember.lastName %></p>
+                <% } %>
               </a>
             </li>
             <%  }); %>
@@ -115,12 +126,12 @@
                   <div class="card-icon">
                     <i class="material-icons">content_copy</i>
                   </div>
-                  <a href="/dashboard/add-data"> <h3 class="card-title">Add Data</h3> </a>
+                  <a href="/dashboard/add-data"> <h3 class="card-title">Insert Data</h3> </a>
 
                 </div>
                 <div class="card-footer">
                   <div class="stats">
-                    <a href="/dashboard/add-data">Add Data Now</a>
+                    <a href="/dashboard/add-data">Insert Data Now</a>
                   </div>
                 </div>
               </div>

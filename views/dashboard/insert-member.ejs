@@ -18,7 +18,7 @@
         <li class="nav-item ">
           <a class="nav-link" href="/dashboard/add-data">
             <i class="material-icons">content_copy</i>
-            <p>Add Data</p>
+            <p>Insert Data</p>
           </a>
         </li>
         <li class="nav-item ">
@@ -75,13 +75,20 @@
           <% teamMembers.forEach((teamMember) => { %>
           <li class="nav-item ">
             <a class="nav-link" href="/dashboard/team/<%= teamMember._id %>">
-              <i class="material-icons far fa-user-circle"></i>
+            <% if(teamMember.image.url){ %>
+                <img style="float: left; border-radius: 20px;" width="25px" height="25px" src="https://res.cloudinary.com/dqkzznlwa/image/upload/v1605356866/ExpotimSystem/f3ltkt6qxa1saqzj
+iw2t.jpg" class=" mx-auto " alt="...">
+                <p style="margin-left: 43px;"><%= teamMember.firstName %> <%= teamMember.lastName %></p>
+              <% }else{ %>
+                <i class="material-icons far fa-user-circle"></i>
                 <p><%= teamMember.firstName %> <%= teamMember.lastName %></p>
+              <% } %>
+
             </a>
           </li>
           <%  }); %>
           <% }else{ %>
-            <p>Not Found</p>
+            <p>No members yet</p>
           <% }%>
         </div>
         <% } %>
@@ -107,7 +114,7 @@
             <% } %>
           </div>
           <!-- flash messages end-->
-          
+
           <div class="row">
             <div class="col-md-12">
               <div class="card">
@@ -116,7 +123,7 @@
                   <p class="card-category">Please insert all data with english letters</p>
                 </div>
                 <div class="card-body">
-                  <form action="/dashboard/insert-member" method="POST">
+                  <form action="/dashboard/insert-member" method="POST" enctype="multipart/form-data">
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group">
@@ -192,8 +199,10 @@
                         </div>
                       </div>
                     </div>
+                    <!-- upload company card image  -->
+                    <input type="file" class="form-control" name="image">
 
-                    <button type="submit" class="btn btn-primary pull-right">Insert Data</button>
+                    <button type="submit" class="btn btn-primary pull-right">Insert Member</button>
                     <div class="clearfix"></div>
                   </form>
                 </div>

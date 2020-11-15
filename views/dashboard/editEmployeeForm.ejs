@@ -18,7 +18,7 @@
         <li class="nav-item ">
           <a class="nav-link" href="/dashboard/add-data">
             <i class="material-icons">content_copy</i>
-            <p>Add Data</p>
+            <p>Insert Data</p>
           </a>
         </li>
         <li class="nav-item ">
@@ -64,8 +64,13 @@
             <li class="nav-item">
           <%  } %>
             <a class="nav-link" href="/dashboard/team/<%= koorMember._id %>">
-              <i class="material-icons far fa-user-circle"></i>
+            <% if(koorMember.image.url){ %>
+                <img style="float: left; border-radius: 20px;" width="25px" height="25px" src="<%= koorMember.image.url %>" class=" mx-auto " alt="...">
+                <p style="margin-left: 43px;"><%= koorMember.firstName %> <%= koorMember.lastName %></p>
+              <% }else{ %>
+                <i class="material-icons far fa-user-circle"></i>
                 <p><%= koorMember.firstName %> <%= koorMember.lastName %></p>
+              <% } %>
             </a>
           </li>
           <%  }); %>
@@ -77,12 +82,17 @@
           <strong class="text-md-left font-weight-bold"> <p> Others Members </p> </strong>
           <% if(teamMembers){ %>
           <% teamMembers.forEach((teamMember) => { %>
-          <li class="nav-item ">
-            <a class="nav-link" href="/dashboard/team/<%= teamMember._id %>">
-              <i class="material-icons far fa-user-circle"></i>
-                <p><%= teamMember.firstName %> <%= teamMember.lastName %></p>
-            </a>
-          </li>
+            <li class="nav-item ">
+              <a class="nav-link" href="/dashboard/team/<%= teamMember._id %>">
+              <% if(teamMember.image.url){ %>
+                  <img style="float: left; border-radius: 20px;" width="25px" height="25px" src="<%= teamMember.image.url %>" class=" mx-auto " alt="...">
+                  <p style="margin-left: 43px;"><%= teamMember.firstName %> <%= teamMember.lastName %></p>
+                <% }else{ %>
+                  <i class="material-icons far fa-user-circle"></i>
+                  <p><%= teamMember.firstName %> <%= teamMember.lastName %></p>
+                <% } %>
+              </a>
+            </li>
           <%  }); %>
           <% }else{ %>
             <p>Not Found</p>

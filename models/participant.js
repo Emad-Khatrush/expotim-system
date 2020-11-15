@@ -3,6 +3,17 @@ var mongoose = require("mongoose");
 var participant = new mongoose.Schema({
   user: {type: mongoose.Schema.Types.ObjectId, ref: "user"},
   company: {type: String, required: true},
+  images: [
+      {
+        url: String,
+        filename: String
+      }
+    ],
+  brandName: {type: String, required: true},
+  businessNumber: {type: String, required: true},
+  companiesWorkedwith: {type: String, required: true},
+  countriesParticipated: {type: String, required: true},
+  personLanguages: {type: String, required: true},
   email: {type: String, required: true},
   firstName: {type: String, required: true},
   lastName: {type: String, required: true},
