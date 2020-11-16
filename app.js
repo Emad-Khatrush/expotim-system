@@ -16,7 +16,8 @@ var express               = require("express"),
     excel                 = require("exceljs"),
     nodemailer            = require('nodemailer'),
     async                 = require("async"),
-    multer                = require('multer');
+    multer                = require('multer'),
+    schedule              = require('node-schedule');
 const { storage }         = require('./cloudinary');
 var upload                = multer({ storage });
 
@@ -70,12 +71,6 @@ app.get("/", function(req,res){
   res.redirect("/login");
 })
 app.get("/login", function(req,res){
-  let todayDate = new Date().toLocaleDateString('tr-TR');
-
-  // let firstday = new Date(todayDate.setDate(first)).toUTCString();
-  // let lastday = new Date(todayDate.setDate(last)).toUTCString();
-  // let firstDayMonth = new Date(todayDate.setDate(1));
-  // let lastDayMonth = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0)
   // var userData = new User({
   //   username: "emadkhatrush@hotmail.com",
   //   firstName: "emad",
@@ -127,7 +122,7 @@ passport.authenticate("local",{
 }),function(req,res){
   req.flash("success", "Wellcome " + req.user.firstName);
   res.redirect("/dashboard");
-})
+});
 // logout route
 app.get("/logout",function(req,res){
   req.logout();
@@ -145,9 +140,12 @@ app.get("/dashboard/add-data", isLogin,function(req,res){
 
 
 // Add Data Route: POST
-app.post("/dashboard/add-data", upload.array("image"), async function(req,res){
+app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(req,res){
+  const jjj = schedule.scheduleJob('1 * * * * *', function(){
+  console.log('The answer to life, the universe, and everything!');
+  jjj.cancel();
+  });
   const images = req.files.map(file => ({ url: file.path, filename: file.filename }));
-  console.log(req.body, req.files);
   var personData = new Participant({
     user: req.user,
     company: req.body.company,
@@ -179,8 +177,23 @@ app.post("/dashboard/add-data", upload.array("image"), async function(req,res){
   });
 })
 // My Reports Route: GET
-app.get("/dashboard/myreports", isLogin,function(req,res){
+app.get("/dashboard/myreports", isLogin,async function(req,res){
   if (req.user.isAdmin) {
+    // Get last week data
+    let weeklyData = [];
+    for (let i = 0; i < 7; i++) {
+      weeklyData.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+    }
+    let parseWeeklyData = Object.values(weeklyData).flat();
+    let lastWeekDate = new Date(new Date() - 6 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+    // get last month data
+    let monthlyData = [];
+    for (let i = 0; i < 30; i++) {
+      monthlyData.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+    }
+    let parseMonthlyData = Object.values(monthlyData).flat();
+    let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+
     Participant.find({}, function(err, fullData){
       if (err) {
         req.flash("error", err.message);
@@ -197,7 +210,11 @@ app.get("/dashboard/myreports", isLogin,function(req,res){
               dailyData: dailyData,
               todayDate: todayDate,
               dailyDataLength: dailyData.length,
-              fullDataLength: fullData.length});
+              fullDataLength: fullData.length,
+              weeklyData: parseWeeklyData,
+              lastWeekDate: lastWeekDate,
+              monthlyData: parseMonthlyData,
+              lastMonthDate: lastMonthDate});
           }
         })
       }
@@ -348,7 +365,7 @@ app.get("/dashboard/insert-member",isLogin,function(req,res){
 });
 
 // Insert Member Route: POST
-app.post("/dashboard/insert-member",upload.single("image"),async function(req,res){
+app.post("/dashboard/insert-member",isLogin ,upload.single("image"),async function(req,res){
   if (req.user.isAdmin) {
     console.log(req.body,req.file);
     const image ={
@@ -381,7 +398,7 @@ app.post("/dashboard/insert-member",upload.single("image"),async function(req,re
   }
 });
 // Team Route: GET
-app.get("/dashboard/team/:id", isLogin,(req, res) => {
+app.get("/dashboard/team/:id", isLogin, (req, res) => {
   if (req.user.isAdmin) {
     var employeeId = req.params.id;
     User.findById(employeeId, function(err, employee){
@@ -389,11 +406,26 @@ app.get("/dashboard/team/:id", isLogin,(req, res) => {
         req.flash("error", err.message);
         return req.redirect("back");
       }
-      Participant.find({user: employee}, function(err, fullData){
+      Participant.find({user: employee}, async function(err, fullData){
         if (err) {
           req.flash("error", err.message);
           return req.redirect("back");
         }
+        // Get last week data
+        let weeklyData = [];
+        for (let i = 0; i < 7; i++) {
+          weeklyData.push(await Participant.find({user: employee, date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+        }
+        let parseWeeklyData = Object.values(weeklyData).flat();
+        let lastWeekDate = new Date(new Date() - 6 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+        // get last month data
+        let monthlyData = [];
+        for (let i = 0; i < 30; i++) {
+          monthlyData.push(await Participant.find({ user: employee,date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+        }
+        let parseMonthlyData = Object.values(monthlyData).flat();
+        let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+
         var todayDate = new Date().toLocaleDateString('tr-TR');
         Participant.find({user: employee, date: todayDate}, function(err, dailyData){
           if (err) {
@@ -406,7 +438,11 @@ app.get("/dashboard/team/:id", isLogin,(req, res) => {
            dailyData: dailyData,
            todayDate: todayDate,
            dailyDataLength: dailyData.length,
-           fullDataLength: fullData.length});
+           fullDataLength: fullData.length,
+           weeklyData: parseWeeklyData,
+           lastWeekDate: lastWeekDate,
+           monthlyData: parseMonthlyData,
+           lastMonthDate: lastMonthDate});
         });
       });
     });
@@ -451,13 +487,23 @@ app.put("/dashboard/team/:id",function(req,res){
 // Excel Export Route: GET
 app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, res, next){
   if (req.user.isAdmin) {
-    let participants;
+    let participants = [];
     if (req.params.typeData === "fullData") {
       console.log("export fullData");
       participants = await Participant.find({});
     }else if (req.params.typeData === "dailyData") {
       var todayDate = new Date().toLocaleDateString('tr-TR');
       participants = await Participant.find({date: todayDate});
+    }else if(req.params.typeData === "weeklyData"){
+      for (let i = 0; i < 7; i++) {
+        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+      }
+      participants = Object.values(participants).flat();
+    }else if(req.params.typeData === "monthlyData"){
+      for (let i = 0; i < 30; i++) {
+        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+      }
+      participants = Object.values(participants).flat();
     }else {
       req.flash("error", "You cant export this type of format");
       return res.redirect("back");
