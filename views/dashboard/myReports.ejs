@@ -75,7 +75,7 @@
         <% }%>
 
         <!-- team members -->
-        <strong class="text-md-left font-weight-bold"> <p> Others Members </p> </strong>
+        <strong class="text-md-left font-weight-bold"> <p> Other Members </p> </strong>
         <% if(teamMembers){ %>
         <% teamMembers.forEach((teamMember) => { %>
           <li class="nav-item ">
@@ -103,6 +103,20 @@
 
       <div class="content">
         <div class="container-fluid">
+          <!-- flash messages -->
+          <div class="container">
+            <% if(error && error.length > 0){ %>
+            <div class="alert alert-danger" role="alert">
+              <%= error %>
+            </div>
+          <% } %>
+          <% if(success && success.length > 0){ %>
+            <div class="alert alert-success" role="alert">
+              <%= success %>
+            </div>
+            <% } %>
+          </div>
+          <!-- flash messages end-->
           <div class="row">
             <div class="col-md-12">
               <div class="card">
@@ -119,9 +133,15 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
+
                         <th>
                           ID
                         </th>
+                        <% if (currentUser.isAdmin) { %>
+                          <th>
+                            Edit Data
+                          </th>
+                        <% } %>
                         <th>
                           Images
                         </th>
@@ -180,6 +200,13 @@
                             <td>
                               <%= count + 1 %>
                             </td>
+                            <% if (currentUser.isAdmin) { %>
+                              <td>
+                                <a class="btn btn-sm btn-warning" href="/dashboard/editData/<%= data._id %>" >
+                                  Edit
+                                 </a>
+                              </td>
+                            <% } %>
                             <td>
                               <% if(data.images.length !== 0){ %>
                             <!-- Button trigger modal -->
@@ -238,6 +265,13 @@
                             <td>
                               <%= data.note %>
                             </td>
+                            <% if(data.ableToEdit){ %>
+                              <td>
+                                <a class="btn btn-sm btn-warning" href="/dashboard/editData/<%= data._id %>" >
+                                  Edit
+                                 </a>
+                              </td>
+                            <% } %>
                           </tr>
                       <%  }) %>
                       </tbody>
@@ -267,6 +301,11 @@
                         <th>
                           ID
                         </th>
+                        <% if (currentUser.isAdmin) { %>
+                          <th>
+                            Edit Data
+                          </th>
+                        <% } %>
                         <th>
                           Images
                         </th>
@@ -325,6 +364,13 @@
                             <td>
                               <%= count + 1 %>
                             </td>
+                            <% if (currentUser.isAdmin) { %>
+                              <td>
+                                <a class="btn btn-sm btn-warning" href="/dashboard/editData/<%= data._id %>" >
+                                  Edit
+                                 </a>
+                              </td>
+                            <% } %>
                             <td>
                               <% if(data.images.length !== 0){ %>
                             <!-- Button trigger modal -->
@@ -412,6 +458,11 @@
                         <th>
                           ID
                         </th>
+                        <% if (currentUser.isAdmin) { %>
+                          <th>
+                            Edit Data
+                          </th>
+                        <% } %>
                         <th>
                           Images
                         </th>
@@ -470,6 +521,13 @@
                             <td>
                               <%= count + 1 %>
                             </td>
+                            <% if (currentUser.isAdmin) { %>
+                              <td>
+                                <a class="btn btn-sm btn-warning" href="/dashboard/editData/<%= data._id %>" >
+                                  Edit
+                                 </a>
+                              </td>
+                            <% } %>
                             <td>
                               <% if(data.images.length !== 0){ %>
                             <!-- Button trigger modal -->
@@ -557,6 +615,11 @@
                         <th>
                           ID
                         </th>
+                        <% if (currentUser.isAdmin) { %>
+                          <th>
+                            Edit Data
+                          </th>
+                        <% } %>
                         <th>
                           Images
                         </th>
@@ -615,6 +678,13 @@
                             <td>
                               <%= count + 1 %>
                             </td>
+                            <% if (currentUser.isAdmin) { %>
+                              <td>
+                                <a class="btn btn-sm btn-warning" href="/dashboard/editData/<%= data._id %>" >
+                                  Edit
+                                 </a>
+                              </td>
+                            <% } %>
                             <td>
                         <% if(data.images.length){ %>
                         <!-- Button trigger modal -->

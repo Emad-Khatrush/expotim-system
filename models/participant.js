@@ -23,7 +23,8 @@ var participant = new mongoose.Schema({
   title: {type: String, required: true},
   interestedField: {type: String, required: true},
   date: {type: String, required: true},
-  note: String
+  note: String,
+  ableToEdit: { type: Boolean, default: true }
 });
 
 module.exports = mongoose.model("Participant", participant);

@@ -18,7 +18,7 @@ var express               = require("express"),
     async                 = require("async"),
     multer                = require('multer'),
     schedule              = require('node-schedule');
-const { storage }         = require('./cloudinary');
+const { storage, cloudinary } = require('./cloudinary');
 var upload                = multer({ storage });
 
 var app = express();
@@ -141,10 +141,10 @@ app.get("/dashboard/add-data", isLogin,function(req,res){
 
 // Add Data Route: POST
 app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(req,res){
-  const jjj = schedule.scheduleJob('1 * * * * *', function(){
-  console.log('The answer to life, the universe, and everything!');
-  jjj.cancel();
-  });
+  // const expEdit = schedule.scheduleJob('1 * * * * *', function(){
+  // console.log('The answer to life, the universe, and everything!');
+  // expEdit.cancel();
+  // });
   const images = req.files.map(file => ({ url: file.path, filename: file.filename }));
   var personData = new Participant({
     user: req.user,
@@ -171,6 +171,17 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
       req.flash("error", err.message)
       res.redirect("/dashboard/add-data");
     }else {
+      const expEdit = schedule.scheduleJob('1 * * * * *', function(){
+      data.ableToEdit = false;
+      Participant.findByIdAndUpdate(data._id,{ $set:
+            {
+              ableToEdit: false
+            }
+         }, (err, newData) => {
+        console.log(newData);
+      });
+      expEdit.cancel();
+      });
       req.flash("success", "Data added successfully")
       res.redirect("/dashboard/add-data");
     }
@@ -244,17 +255,21 @@ app.get("/dashboard/myreports", isLogin,async function(req,res){
   }
 })
 // display report images: GET
-app.get("/dashboard/image/:id",isLogin ,function(req,res){
-  var participantId = req.params.id;
-  Participant.findById(participantId, function(err, participant){
-    if(err) {
-      console.log(err);
-      req.flash("error", err.message);
-      return res.redirect("back");
-    }else{
-      res.render("./dashboard/viewImages", {participant: participant });
+app.get("/dashboard/image/:id",isLogin ,async (req,res) => {
+  try {
+    let participantId = req.params.id;
+    const participant = await Participant.findById(participantId);
+    if (req.user._id.equals(participant.user) || req.user.isAdmin) {
+      return res.render("./dashboard/viewImages", {participant: participant });
+    }else {
+      req.flash("error", "You are not own this images");
+      return res.redirect("/dashboard");
     }
-  });
+
+  } catch (e) {
+    req.flash("error", e.message);
+    return res.redirect("/dashboard");
+  }
 });
 // display report images: GET
 app.get("/dashboard/personalImage/:id",isLogin ,function(req,res){
@@ -368,10 +383,7 @@ app.get("/dashboard/insert-member",isLogin,function(req,res){
 app.post("/dashboard/insert-member",isLogin ,upload.single("image"),async function(req,res){
   if (req.user.isAdmin) {
     console.log(req.body,req.file);
-    const image ={
-      url: req.file.path,
-      filename: req.file.filename
-    }
+
     var userData = new User({
       username: req.body.username,
       firstName: req.body.firstName,
@@ -383,7 +395,14 @@ app.post("/dashboard/insert-member",isLogin ,upload.single("image"),async functi
       status: req.body.status,
       generelField: req.body.generelField
     });
-    userData.image = image;
+    if (req.file) {
+      const image ={
+        url: req.file.path,
+        filename: req.file.filename
+      }
+      userData.image = image;
+    }
+
      await User.register(userData, req.body.password, function(err, user){
       if (err) {
         req.flash("error", err.message);
@@ -460,7 +479,8 @@ app.get("/dashboard/team/:id/edit", isLogin,function(req,res){
         req.flash("error", err.message);
         return req.redirect("back");
       }
-      res.render("./dashboard/editEmployeeForm", {user: employee});
+
+      res.render("./dashboard/editEmployeeForm", {user: employee } );
     });
   }else {
     req.flash("error", "You dont have the admin permissions")
@@ -468,17 +488,63 @@ app.get("/dashboard/team/:id/edit", isLogin,function(req,res){
   }
 });
 // Team Edit Route: Edit
-app.put("/dashboard/team/:id",function(req,res){
+app.put("/dashboard/team/:id",isLogin, upload.single("image"), async function(req,res){
   if (req.user.isAdmin) {
-    var employeeId = req.params.id;
-    User.findByIdAndUpdate(employeeId, req.body.user,function(err, updatedUser){
+      var employeeId = req.params.id;
+      const employee = await User.findByIdAndUpdate(employeeId, {...req.body.user});
+      if (req.file) {
+        const image = { url: req.file.path, filename: req.file.filename }
+        employee.image = image;
+      }
+      await employee.save();
+      if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+          await cloudinary.uploader.destroy(filename);
+        }
+        await employee.updateOne({image: {}});
+      }
+      req.flash("success", "Data Updated successfully");
+      res.redirect("/dashboard/team/" + employeeId);
+  }else {
+    req.flash("error", "You dont have the admin permissions")
+    return res.redirect("/dashboard");
+  }
+});
+
+// Edit Participant Data: GET
+app.get("/dashboard/editData/:id",async (req, res) => {
+  const participantId = req.params.id;
+  const partData = await Participant.findById(participantId);
+  if (req.user.isAdmin || partData.ableToEdit) {
+    Participant.findById(participantId, (err, participant) => {
       if (err) {
         req.flash("error", err.message);
         return req.redirect("back");
       }
-      req.flash("success", "Data Updated successfully");
-      res.redirect("/dashboard/team/" + employeeId);
+      res.render("./dashboard/editParticipantData", {participant: participant});
     });
+  }else {
+    req.flash("error", "You dont have the admin permissions")
+    return res.redirect("/dashboard");
+  }
+});
+// Edit Participant Data: PUT
+app.put("/dashboard/editData/:id", isLogin,upload.array("images"),async (req, res) => {
+  let participantId = req.params.id;
+  let partData = await Participant.findById(participantId);
+  if (req.user.isAdmin || partData.ableToEdit) {
+    const participant = await Participant.findByIdAndUpdate(participantId, {...req.body.participant});
+    const images = req.files.map(file => ({ url: file.path, filename: file.filename }));
+    participant.images.push(...images);
+    await participant.save();
+    if (req.body.deleteImages) {
+      for (let filename of req.body.deleteImages) {
+        await cloudinary.uploader.destroy(filename);
+      }
+      await participant.updateOne( {$pull: { images: { filename: {$in : req.body.deleteImages } } } } );
+    }
+    req.flash("success", "Data Updated successfully");
+    res.redirect("back");
   }else {
     req.flash("error", "You dont have the admin permissions")
     return res.redirect("/dashboard");
@@ -574,6 +640,15 @@ function isLogin(req, res, next) {
     return next();
   }
   res.redirect("/login");
+}
+function isEmpty(obj) {
+  for(var prop in obj) {
+    if(obj.hasOwnProperty(prop)) {
+      return false;
+    }
+  }
+
+  return JSON.stringify(obj) === JSON.stringify({});
 }
 
 // Local host
