@@ -141,10 +141,36 @@ app.get("/dashboard/add-data", isLogin,function(req,res){
 
 // Add Data Route: POST
 app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(req,res){
-  // const expEdit = schedule.scheduleJob('1 * * * * *', function(){
-  // console.log('The answer to life, the universe, and everything!');
-  // expEdit.cancel();
-  // });
+  console.log("--------");
+  console.log(req.body);
+  console.log("--------");
+  // looping of interested Fields and inserted in a string
+  let interestedFields = "";
+  if (req.body.checked) {
+    req.body.checked.forEach((item, i) => {
+      if (req.body.checked.length - 1 === i) {
+        interestedFields +=  item;
+      }else {
+        interestedFields +=  item + " / ";
+      }
+    });
+    console.log(interestedFields);
+  }
+  // selector companyMainActivity
+  let companyMainActivity = "";
+  if (req.body.companyMainActivity === "Other") {
+    companyMainActivity = req.body.inputCompanyMainActivity;
+  }else {
+    companyMainActivity = req.body.companyMainActivity;
+  }
+  // selector title
+  let title = "";
+  if (req.body.title === "Other") {
+    title = req.body.inputTitle;
+  }else {
+    title = req.body.title;
+  }
+
   const images = req.files.map(file => ({ url: file.path, filename: file.filename }));
   var personData = new Participant({
     user: req.user,
@@ -160,8 +186,10 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
     phone: req.body.phone,
     businessNumber: req.body.businessNumber,
     city: req.body.city,
-    title: req.body.title,
-    interestedField: req.body.interestedField,
+    title: title,
+    interestedField: interestedFields,
+    purchasingRole: req.body.rolePurchasing,
+    companyMainActivity: companyMainActivity,
     date: new Date().toLocaleDateString('tr-TR'),
     note: req.body.note
   })
@@ -171,7 +199,7 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
       req.flash("error", err.message)
       res.redirect("/dashboard/add-data");
     }else {
-      const expEdit = schedule.scheduleJob('1 * * * * *', function(){
+      const expEdit = schedule.scheduleJob('3 * * * * *', function(){
       data.ableToEdit = false;
       Participant.findByIdAndUpdate(data._id,{ $set:
             {
@@ -382,7 +410,9 @@ app.get("/dashboard/insert-member",isLogin,function(req,res){
 // Insert Member Route: POST
 app.post("/dashboard/insert-member",isLogin ,upload.single("image"),async function(req,res){
   if (req.user.isAdmin) {
-    console.log(req.body,req.file);
+    console.log("----------------");
+    console.log(req.body);
+    console.log("----------------");
 
     var userData = new User({
       username: req.body.username,
@@ -555,7 +585,6 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
   if (req.user.isAdmin) {
     let participants = [];
     if (req.params.typeData === "fullData") {
-      console.log("export fullData");
       participants = await Participant.find({});
     }else if (req.params.typeData === "dailyData") {
       var todayDate = new Date().toLocaleDateString('tr-TR');

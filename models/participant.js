@@ -10,7 +10,7 @@ var participant = new mongoose.Schema({
       }
     ],
   brandName: {type: String, required: true},
-  businessNumber: {type: String, required: true},
+  businessNumber: Number,
   companiesWorkedwith: {type: String, required: true},
   countriesParticipated: {type: String, required: true},
   personLanguages: {type: String, required: true},
@@ -24,6 +24,8 @@ var participant = new mongoose.Schema({
   interestedField: {type: String, required: true},
   date: {type: String, required: true},
   note: String,
+  purchasingRole: {type: String, required: true} ,
+  companyMainActivity: {type: String, required: true},
   ableToEdit: { type: Boolean, default: true }
 });
 

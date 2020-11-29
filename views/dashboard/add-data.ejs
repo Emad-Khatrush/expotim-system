@@ -6,6 +6,7 @@
   <title>
     Insert Data
   </title>
+
     <%- include ('../partials/header.ejs') -%>
     <div class="sidebar-wrapper">
       <ul class="nav">
@@ -209,17 +210,156 @@
                           <input type="text" class="form-control" name="city" required>
                         </div>
                       </div>
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Title Of Person - Years Of Experience</label>
-                          <input type="text" class="form-control" name="title" required>
-                        </div>
+                    </div>
+
+
+                    <div class="row">
+                      <!-- selects -->
+                      <div class="col-md-3">
+                        <label for="mainActivity"> What's the company's main business activity? </label>
+                        <select class="custom-select mt-2 mb-2 companyMainActivity" name="companyMainActivity">
+                          <option hidden> Please Select </option>
+                          <option value="Architectural Firm">Architectural Firm</option>
+                          <option value="Association">Association</option>
+                          <option value="Consultancy Firm">Consultancy Firm</option>
+                          <option value="Contractor">Contractor</option>
+
+                          <option value="Distributor / Dealer / Trader">Distributor / Dealer / Trader</option>
+                          <option value="District Cooling & Utility Company">District Cooling & Utility Company</option>
+                          <option value="Education & Training">Education & Training</option>
+                          <option value="Engineering Firm">Engineering Firm</option>
+                          <option value="Facilities Management Firm">Facilities Management Firm</option>
+                          <option value="Finance & Legal">Finance & Legal</option>
+                          <option value="Government / Municipality">Government / Municipality</option>
+                          <option value="Interior Design Firm">Interior Design Firm</option>
+
+                          <option value="IT & Software">IT & Software</option>
+                          <option value="Landscape & Urban Planning">Landscape & Urban Planning</option>
+                          <option value="Logistics & Freight Forwarding">Logistics & Freight Forwarding</option>
+                          <option value="Manufacturer">Manufacturer</option>
+
+                          <option value="Media">Media</option>
+                          <option value="Oil & Gas">Oil & Gas</option>
+                          <option value="Project Management Firm">Project Management Firm</option>
+                          <option value="Property Developer">Property Developer</option>
+
+                          <option value="Testing & Certification">Testing & Certification</option>
+                          <option value="Tourism & Hospitality">Tourism & Hospitality</option>
+                          <option value="Other">Other (please specify)</option>
+                        </select>
                       </div>
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Which Products/Sub Sectors He Is Interested With</label>
-                          <input type="text" class="form-control" name="interestedField" required>
+
+                      <div class="col-md-3 mt-4 sp">
+                        <label for="inputCompanyMainActivity"></label>
+                        <input type="text" name="inputCompanyMainActivity" class="form-control" value="" placeholder="Please fill the data here" required>
+                      </div>
+
+                      <!-- selector 2 -->
+                      <div class="col-md-3">
+                        <label for="title"> What is your seniority level within your company?   </label>
+                        <select class="custom-select mt-2 mb-2 title" name="title">
+                          <option hidden> Please Select </option>
+                          <option value="Business Owner">Business Owner</option>
+                          <option value="C-Level">C-Level (President, CEO, COO, CFO)</option>
+                          <option value="Senior Management">Senior Management (Director, Head of Department)</option>
+                          <option value="Middle Management">Middle Management</option>
+                          <option value="Other">Other (please specify)</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-3 mt-4 selector2">
+                        <label for="inputTitle"></label>
+                        <input type="text" name="inputTitle" class="form-control" value="" placeholder="Please fill the data here" required>
+                      </div>
+
+                      <!-- selector 3 -->
+                      <div class="col-md-3">
+                        <label for="rolePurchasing"> What is your role in purchasing products / services? </label>
+                        <select class="custom-select mt-2 mb-2" name="rolePurchasing">
+                          <option hidden> Please Select </option>
+                          <option value="Influencer">Influencer</option>
+                          <option value="Purchaser / Buyer">Purchaser / Buyer</option>
+                          <option value="Decision Maker">Decision Maker</option>
+                          <option value="End User">End User</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <!-- checkboxs 4 -->
+                      <div class="col-md-12 mb-3">
+                        <label for="">What products are you interested in seeing at the show? </label>
+                        <br>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox1" value="Building Envelope / Special Construction" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox1">Building Envelope / Special Construction</label>
                         </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox2" value="Building Interiors & Finishes" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox2">Building Interiors & Finishes</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox3" value="Concrete & Cement Products, Technologies & Services" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox3">Concrete & Cement Products, Technologies & Services</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox4" value="Construction Tools & Personal Protection Equipment" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox4">Construction Tools & Personal Protection Equipment</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox5" value="Digital Construction Products & Services" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox5">Digital Construction Products & Services</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox6" value="FM Products, Technologies & Services" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox6">FM Products, Technologies & Services</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox7" value="Free Zones" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox7">Free Zones</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox8" value="Glass Production, Technologies & Machineries" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox8">Glass Production, Technologies & Machineries</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox9" value="Heavy Construction Equipment, Machinery & Vehicles" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox9">Heavy Construction Equipment, Machinery & Vehicles</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input type="checkbox" id="inlineCheckbox10" value="HVAC R Products, Technologies & Services" name="checked[]">
+                          <label class="form-check-label" for="inlineCheckbox10">HVAC R Products, Technologies & Services</label>
+                        </div>
+                          <div class="form-check form-check-inline">
+                            <input type="checkbox" id="inlineCheckbox11" value="Intelligent Buildings" name="checked[]">
+                            <label class="form-check-label" for="inlineCheckbox11">Intelligent Buildings</label>
+                          </div>
+                          <div class="form-check form-check-inline">
+                            <input type="checkbox" id="inlineCheckbox12" value="MEP Services" name="checked[]">
+                            <label class="form-check-label" for="inlineCheckbox12">MEP Services</label>
+                          </div>
+                            <div class="form-check form-check-inline">
+                              <input type="checkbox" id="inlineCheckbox13" value="Offsite & Modular Construction" name="checked[]">
+                              <label class="form-check-label" for="inlineCheckbox13">Offsite & Modular Construction</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input type="checkbox" id="inlineCheckbox14" value="Offsite & Modular Construction" name="checked[]">
+                              <label class="form-check-label" for="inlineCheckbox14">Offsite & Modular Construction</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                              <input type="checkbox" id="inlineCheckbox15" value="Stone Products, Technologies & Services" name="checked[]">
+                              <label class="form-check-label" for="inlineCheckbox15">Stone Products, Technologies & Services</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input type="checkbox" id="inlineCheckbox16" value="Urban Design and Landscape Products, Technologies & Services" name="checked[]">
+                              <label class="form-check-label" for="inlineCheckbox16">Urban Design and Landscape Products, Technologies & Services</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input type="checkbox" id="inlineCheckbox17" value="Windows, Doors & Facades" name="checked[]">
+                              <label class="form-check-label" for="inlineCheckbox17">Windows, Doors & Facades</label>
+                            </div>
                       </div>
                     </div>
                     <!-- upload company card image  -->
@@ -238,6 +378,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary pull-right">Insert Data</button>
                     <div class="clearfix"></div>
+                    </div>
                   </form>
                 </div>
               </div>
@@ -291,7 +432,10 @@
   <script src="/demo/demo.js"></script>
   <script>
     $(document).ready(function() {
+      $('.sp').hide();
+      $('.selector2').hide();
       $().ready(function() {
+
         $sidebar = $('.sidebar');
 
         $sidebar_img_container = $sidebar.find('.sidebar-background');
@@ -456,6 +600,28 @@
             clearInterval(simulateWindowResize);
           }, 1000);
 
+
+
+        });
+
+        $(".companyMainActivity").change(function(){
+          var companyMainActivity = $(this).children("option:selected").val();
+          if (companyMainActivity == "Other") {
+            $('.sp').show();
+
+          }else {
+            $('.sp').hide();
+          }
+        });
+
+        $(".title").change(function(){
+          var title = $(this).children("option:selected").val();
+          if (title == "Other") {
+            $('.selector2').show();
+
+          }else {
+            $('.selector2').hide();
+          }
         });
       });
     });
