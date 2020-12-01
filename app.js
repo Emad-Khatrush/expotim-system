@@ -730,7 +730,8 @@ function isEmpty(obj) {
   return JSON.stringify(obj) === JSON.stringify({});
 }
 
+const port = process.env.PORT || 3000;
 // Local host
-app.listen(3000,"127.0.0.1" , function() {
+app.listen(port , function() {
   console.log("server started");
 })
