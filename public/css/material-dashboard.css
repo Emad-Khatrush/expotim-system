@@ -60,6 +60,12 @@ body {
   text-align: left;
   background-color: #fafafa;
 }
+.hideInput{
+  display: none;
+}
+.showInput{
+  display: block;
+}
 
 [tabindex="-1"]:focus {
   outline: 0 !important;

@@ -217,8 +217,8 @@
                       <!-- selects -->
                       <div class="col-md-3">
                         <label for="mainActivity"> What's the company's main business activity? </label>
-                        <select class="custom-select mt-2 mb-2 companyMainActivity" name="companyMainActivity">
-                          <option hidden> Please Select </option>
+                        <select class="custom-select mt-2 mb-2 companyMainActivity" name="companyMainActivity" required>
+                          <option value="" hidden> Please Select </option>
                           <option value="Architectural Firm">Architectural Firm</option>
                           <option value="Association">Association</option>
                           <option value="Consultancy Firm">Consultancy Firm</option>
@@ -251,14 +251,14 @@
 
                       <div class="col-md-3 mt-4 sp">
                         <label for="inputCompanyMainActivity"></label>
-                        <input type="text" name="inputCompanyMainActivity" class="form-control" value="" placeholder="Please fill the data here" required>
+                        <input type="text" name="inputCompanyMainActivity" class="form-control hideInput hideInput1" value="" placeholder="Please fill the data here" >
                       </div>
 
                       <!-- selector 2 -->
                       <div class="col-md-3">
                         <label for="title"> What is your seniority level within your company?   </label>
-                        <select class="custom-select mt-2 mb-2 title" name="title">
-                          <option hidden> Please Select </option>
+                        <select class="custom-select mt-2 mb-2 title" name="title" required>
+                          <option value="" hidden> Please Select </option>
                           <option value="Business Owner">Business Owner</option>
                           <option value="C-Level">C-Level (President, CEO, COO, CFO)</option>
                           <option value="Senior Management">Senior Management (Director, Head of Department)</option>
@@ -269,14 +269,14 @@
 
                       <div class="col-md-3 mt-4 selector2">
                         <label for="inputTitle"></label>
-                        <input type="text" name="inputTitle" class="form-control" value="" placeholder="Please fill the data here" required>
+                        <input type="text" name="inputTitle" class="form-control hideInput hideInput2" value="" placeholder="Please fill the data here" >
                       </div>
 
                       <!-- selector 3 -->
                       <div class="col-md-3">
                         <label for="rolePurchasing"> What is your role in purchasing products / services? </label>
-                        <select class="custom-select mt-2 mb-2" name="rolePurchasing">
-                          <option hidden> Please Select </option>
+                        <select class="custom-select mt-2 mb-2" name="rolePurchasing" required>
+                          <option value="" hidden> Please Select </option>
                           <option value="Influencer">Influencer</option>
                           <option value="Purchaser / Buyer">Purchaser / Buyer</option>
                           <option value="Decision Maker">Decision Maker</option>
@@ -344,8 +344,8 @@
                               <label class="form-check-label" for="inlineCheckbox13">Offsite & Modular Construction</label>
                             </div>
                             <div class="form-check form-check-inline">
-                              <input type="checkbox" id="inlineCheckbox14" value="Offsite & Modular Construction" name="checked[]">
-                              <label class="form-check-label" for="inlineCheckbox14">Offsite & Modular Construction</label>
+                              <input type="checkbox" id="inlineCheckbox14" value="Solar Products & Technologies" name="checked[]">
+                              <label class="form-check-label" for="inlineCheckbox14">Solar Products & Technologies</label>
                             </div>
 
                             <div class="form-check form-check-inline">
@@ -607,9 +607,10 @@
         $(".companyMainActivity").change(function(){
           var companyMainActivity = $(this).children("option:selected").val();
           if (companyMainActivity == "Other") {
+            $('.hideInput1').removeClass('hideInput');
             $('.sp').show();
-
           }else {
+            $('.hideInput1').addClass('hideInput');
             $('.sp').hide();
           }
         });
@@ -617,9 +618,11 @@
         $(".title").change(function(){
           var title = $(this).children("option:selected").val();
           if (title == "Other") {
+            $('.hideInput2').removeClass('hideInput');
             $('.selector2').show();
 
           }else {
+            $('.hideInput2').addClass('hideInput');
             $('.selector2').hide();
           }
         });

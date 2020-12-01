@@ -29,12 +29,19 @@ app.use(express.static("public"));
 app.use(methodOverride('_method'));
 app.use(flash());
 
-// connect mongoose
-mongoose.connect("mongodb://localhost/data-system",
-{ useNewUrlParser: true,
-  useUnifiedTopology: true }, function(){
-    console.log("mongodb connected");
-  });
+const dbURL = process.env.DB_URL;
+// local mongoose
+// mongoose.connect("mongodb://localhost/data-system",
+// { useNewUrlParser: true,
+//   useUnifiedTopology: true }, function(){
+//     console.log("mongodb connected");
+//   });
+  // connect mongoose
+  mongoose.connect(dbURL,
+  { useNewUrlParser: true,
+    useUnifiedTopology: true }, function(){
+      console.log("mongodb connected");
+    });
 
 // passport configurations
 app.use(session({
@@ -50,12 +57,11 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use(async function(req,res,next){
-  await User.find({title: "koordinator"}, function(err,koorMembers){
-    res.locals.koorMembers = koorMembers;
-  })
-  await User.find({title: "team-member"}, function(err,teamMembers){
-    res.locals.teamMembers = teamMembers;
-  })
+  const koors = await User.find({title: "koordinator"});
+  const teamMembers = await User.find({title: "team-member"});
+
+  res.locals.koorMembers = koors;
+  res.locals.teamMembers = teamMembers;
 
   res.locals.currentUser = req.user;
   res.locals.error       = req.flash("error");
@@ -72,15 +78,15 @@ app.get("/", function(req,res){
 })
 app.get("/login", function(req,res){
   // var userData = new User({
-  //   username: "emadkhatrush@hotmail.com",
-  //   firstName: "emad",
-  //   lastName: "khatrush",
-  //   title: "req.body.position",
-  //   phone: 54656,
-  //   address: "req.body.adress",
-  //   city: "req.body.city",
-  //   status: "req.body.status",
-  //   generelField: "req.body.generelField",
+  //   username: "emad.khatrush@hotmail.com",
+  //   firstName: "Emad",
+  //   lastName: "Khatrush",
+  //   title: "Yazılım mühendisliği",
+  //   phone: 00905535728209,
+  //   address: "#",
+  //   city: "benghazi",
+  //   status: "single",
+  //   generelField: "Yazılım mühendisliği",
   //   isAdmin: true
   // });
   // User.register(userData, "123456", function(err, user){
@@ -134,7 +140,7 @@ app.get("/dashboard",isLogin ,function(req,res){
   res.render("./dashboard/dashboard");
 })
 // Add Data Route: GET
-app.get("/dashboard/add-data", isLogin,function(req,res){
+app.get("/dashboard/add-data", isLogin, async function(req,res){
   res.render("./dashboard/add-data");
 })
 
@@ -147,14 +153,11 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
   // looping of interested Fields and inserted in a string
   let interestedFields = "";
   if (req.body.checked) {
-    req.body.checked.forEach((item, i) => {
-      if (req.body.checked.length - 1 === i) {
-        interestedFields +=  item;
-      }else {
-        interestedFields +=  item + " / ";
-      }
-    });
-    console.log(interestedFields);
+    interestedFields = req.body.checked;
+
+  }else {
+    req.flash("error", "Please select at least one of the Interested products section");
+    return res.redirect("/dashboard/add-data")
   }
   // selector companyMainActivity
   let companyMainActivity = "";
@@ -199,7 +202,7 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
       req.flash("error", err.message)
       res.redirect("/dashboard/add-data");
     }else {
-      const expEdit = schedule.scheduleJob('3 * * * * *', function(){
+      const expEdit = schedule.scheduleJob('* 23 * * * *', function(){
       data.ableToEdit = false;
       Participant.findByIdAndUpdate(data._id,{ $set:
             {
@@ -327,12 +330,12 @@ app.post("/dashboard/contact", isLogin,function(req,res){
     service: 'hotmail',
     auth: {
       user: 'qwe.emad@hotmail.com',
-      pass: 'Naruto357&$'
+      pass: process.env.HOTMAIL_PASS
       }
     });
 
     var mailOptions = {
-      from: 'qwe.emad@hotmail.com',
+      from: 'emad.suleiman@expotim.com',
       to: 'medokhatrush@gmail.com',
       subject: req.body.subject,
       html: `<h3> Message from ${req.user.firstName} ${req.user.lastName}</h3> <br> <p> ${req.body.note} <h3>Contact Info: ${req.user.username} </h3></p>`
@@ -562,9 +565,54 @@ app.get("/dashboard/editData/:id",async (req, res) => {
 app.put("/dashboard/editData/:id", isLogin,upload.array("images"),async (req, res) => {
   let participantId = req.params.id;
   let partData = await Participant.findById(participantId);
+
+  let interestedFields = "";
+  if (req.body.checked) {
+    interestedFields = req.body.checked;
+
+  }else {
+    req.flash("error", "Please select at least one of the Interested products section");
+    return res.redirect("/dashboard/editData/" + participantId);
+  }
+  // selector companyMainActivity
+  let companyMainActivity = "";
+  if (req.body.companyMainActivity === "Other") {
+    companyMainActivity = req.body.inputCompanyMainActivity;
+  }else {
+    companyMainActivity = req.body.companyMainActivity;
+  }
+  // selector title
+  let title = "";
+  if (req.body.title === "Other") {
+    title = req.body.inputTitle;
+  }else {
+    title = req.body.title;
+  }
+
+  var personData = {
+    company: req.body.company,
+    email: req.body.email,
+    brandName: req.body.brandName,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    companyAdress: req.body.companyAdress,
+    companiesWorkedwith: req.body.companiesWorkedWith,
+    countriesParticipated: req.body.countriesParticipated,
+    personLanguages: req.body.personLanguages,
+    phone: req.body.phone,
+    businessNumber: req.body.businessNumber,
+    city: req.body.city,
+    title: title,
+    interestedField: interestedFields,
+    purchasingRole: req.body.rolePurchasing,
+    companyMainActivity: companyMainActivity,
+    note: req.body.note
+  }
+
   if (req.user.isAdmin || partData.ableToEdit) {
-    const participant = await Participant.findByIdAndUpdate(participantId, {...req.body.participant});
+    const participant = await Participant.findByIdAndUpdate(participantId, {...personData});
     const images = req.files.map(file => ({ url: file.path, filename: file.filename }));
+    console.log(participant);
     participant.images.push(...images);
     await participant.save();
     if (req.body.deleteImages) {
@@ -613,19 +661,22 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
       { header: "First Name", key: "firstName", width: 20 },
       { header: "Last Name", key: "lastName", width: 20 },
       { header: "Email", key: "email", width: 30 },
+      { header: "City", key: "city", width: 20 },
       { header: "Company Adress", key: "companyAdress", width: 30 },
       { header: "Phone Number", key: "phone", width: 20 },
       { header: "Business Number", key: "businessNumber", width: 20 },
       { header: "Which Companies They Work with", key: "companiesWorkedwith", width: 20 },
       { header: "Which Countries Were/Will Participating In The Exhibitions", key: "countriesParticipated", width: 20 },
       { header: "Which Languages The Person Known", key: "personLanguages", width: 20 },
-      { header: "Title", key: "title", width: 25 },
+      { header: "What is your seniority level within your company?", key: "title", width: 25 },
       { header: "Which Products/Sub Sectors He Is Interested With", key: "interestedField", width: 25 },
+      { header: "What's the company's main business activity?", key: "companyMainActivity", width: 15 },
+      { header: "What is your role in purchasing products / services?", key: "purchasingRole", width: 15 },
       { header: "Created Date", key: "date", width: 15 },
       { header: "Note", key: "note", width: 25 },
       { header: "Founder", key: "founder", width: 25 }
     ];
-    const users        = await User.find({});
+    const users = await User.find({});
     let count = 1;
     participants.forEach(function(participant){
       users.forEach(function(userData){
@@ -676,7 +727,6 @@ function isEmpty(obj) {
       return false;
     }
   }
-
   return JSON.stringify(obj) === JSON.stringify({});
 }
 

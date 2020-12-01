@@ -133,7 +133,6 @@
                   <div class="table-responsive">
                     <table class="table">
                       <thead class=" text-primary">
-
                         <th>
                           ID
                         </th>
@@ -186,6 +185,12 @@
                         </th>
                         <th>
                           Which Products/Sub Sectors He Is Interested With
+                        </th>
+                        <th>
+                          What's the company's main business activity?
+                        </th>
+                        <th>
+                          What is your role in purchasing products / services?
                         </th>
                         <th>
                           Created Date
@@ -260,12 +265,18 @@
                               <%= data.interestedField %>
                             </td>
                             <td>
+                              <%= data.companyMainActivity %>
+                            </td>
+                            <td>
+                              <%= data.purchasingRole %>
+                            </td>
+                            <td>
                               <%= data.date %>
                             </td>
                             <td>
                               <%= data.note %>
                             </td>
-                            <% if(data.ableToEdit){ %>
+                            <% if(data.ableToEdit && !currentUser.isAdmin){ %>
                               <td>
                                 <a class="btn btn-sm btn-warning" href="/dashboard/editData/<%= data._id %>" >
                                   Edit
@@ -352,6 +363,12 @@
                           Which Products/Sub Sectors He Is Interested With
                         </th>
                         <th>
+                          What's the company's main business activity?
+                        </th>
+                        <th>
+                          What is your role in purchasing products / services?
+                        </th>
+                        <th>
                           Created Date
                         </th>
                         <th>
@@ -422,6 +439,12 @@
                             </td>
                             <td>
                               <%= data.interestedField %>
+                            </td>
+                            <td>
+                            	<%= data.companyMainActivity %>
+                            </td>
+                            <td>
+                            	<%= data.purchasingRole %>
                             </td>
                             <td>
                               <%= data.date %>
@@ -509,6 +532,12 @@
                           Which Products/Sub Sectors He Is Interested With
                         </th>
                         <th>
+                          What's the company's main business activity?
+                        </th>
+                        <th>
+                          What is your role in purchasing products / services?
+                        </th>
+                        <th>
                           Created Date
                         </th>
                         <th>
@@ -579,6 +608,12 @@
                             </td>
                             <td>
                               <%= data.interestedField %>
+                            </td>
+                            <td>
+                            	<%= data.companyMainActivity %>
+                            </td>
+                            <td>
+                            	<%= data.purchasingRole %>
                             </td>
                             <td>
                               <%= data.date %>
@@ -666,6 +701,12 @@
                           Which Products/Sub Sectors He Is Interested With
                         </th>
                         <th>
+                          What's the company's main business activity?
+                        </th>
+                        <th>
+                          What is your role in purchasing products / services?
+                        </th>
+                        <th>
                           Created Date
                         </th>
                         <th>
@@ -736,6 +777,12 @@
                             </td>
                             <td>
                               <%= data.interestedField %>
+                            </td>
+                            <td>
+                            	<%= data.companyMainActivity %>
+                            </td>
+                            <td>
+                            	<%= data.purchasingRole %>
                             </td>
                             <td>
                               <%= data.date %>
