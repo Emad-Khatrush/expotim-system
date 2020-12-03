@@ -17,7 +17,10 @@ var express               = require("express"),
     nodemailer            = require('nodemailer'),
     async                 = require("async"),
     multer                = require('multer'),
-    schedule              = require('node-schedule');
+    schedule              = require('node-schedule'),
+    mongoSanitize         = require('express-mongo-sanitize'),
+    ftpClient = require('ftp-client');
+const helmet = require("helmet");
 const { storage, cloudinary } = require('./cloudinary');
 var upload                = multer({ storage });
 
@@ -43,6 +46,7 @@ const dbURL = process.env.DB_URL;
       console.log("mongodb connected");
     });
 
+
 // passport configurations
 app.use(session({
     secret: "expotim",
@@ -50,11 +54,16 @@ app.use(session({
     saveUninitialized: false
 }));
 
+
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new localStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+// To remove data, use:
+app.use(mongoSanitize());
+
+app.use(helmet({ contentSecurityPolicy: false}));
 
 app.use(async function(req,res,next){
   const koors = await User.find({title: "koordinator"});
@@ -78,15 +87,15 @@ app.get("/", function(req,res){
 })
 app.get("/login", function(req,res){
   // var userData = new User({
-  //   username: "emad.khatrush@hotmail.com",
-  //   firstName: "Emad",
-  //   lastName: "Khatrush",
-  //   title: "Yazılım mühendisliği",
-  //   phone: 00905535728209,
+  //   username: "expotim@expotim.com",
+  //   firstName: "#",
+  //   lastName: "#",
+  //   title: "#",
+  //   phone: 00,
   //   address: "#",
-  //   city: "benghazi",
+  //   city: "#",
   //   status: "single",
-  //   generelField: "Yazılım mühendisliği",
+  //   generelField: "#",
   //   isAdmin: true
   // });
   // User.register(userData, "123456", function(err, user){
@@ -151,14 +160,16 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
   console.log(req.body);
   console.log("--------");
   // looping of interested Fields and inserted in a string
-  let interestedFields = "";
+  let interestedFields = [];
   if (req.body.checked) {
     interestedFields = req.body.checked;
-
+  }else if(req.body.otherInterested) {
+    interestedFields.push(req.body.otherInterested);
   }else {
     req.flash("error", "Please select at least one of the Interested products section");
     return res.redirect("/dashboard/add-data")
   }
+
   // selector companyMainActivity
   let companyMainActivity = "";
   if (req.body.companyMainActivity === "Other") {
