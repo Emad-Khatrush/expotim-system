@@ -163,11 +163,12 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
   let interestedFields = [];
   if (req.body.checked) {
     interestedFields = req.body.checked;
-  }else if(req.body.otherInterested) {
-    interestedFields.push(req.body.otherInterested);
   }else {
     req.flash("error", "Please select at least one of the Interested products section");
     return res.redirect("/dashboard/add-data")
+  }
+  if(req.body.otherInterested) {
+    interestedFields.push(req.body.otherInterested);
   }
 
   // selector companyMainActivity
@@ -202,6 +203,7 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
     city: req.body.city,
     title: title,
     interestedField: interestedFields,
+    otherInterested: req.body.otherInterested,
     purchasingRole: req.body.rolePurchasing,
     companyMainActivity: companyMainActivity,
     date: new Date().toLocaleDateString('tr-TR'),
@@ -557,33 +559,41 @@ app.put("/dashboard/team/:id",isLogin, upload.single("image"), async function(re
 
 // Edit Participant Data: GET
 app.get("/dashboard/editData/:id",async (req, res) => {
-  const participantId = req.params.id;
-  const partData = await Participant.findById(participantId);
-  if (req.user.isAdmin || partData.ableToEdit) {
-    Participant.findById(participantId, (err, participant) => {
-      if (err) {
-        req.flash("error", err.message);
-        return req.redirect("back");
-      }
-      res.render("./dashboard/editParticipantData", {participant: participant});
-    });
-  }else {
+  try {
+    const participantId = req.params.id;
+    const partData = await Participant.findById(participantId);
+    if (req.user.isAdmin || partData.ableToEdit) {
+      Participant.findById(participantId, (err, participant) => {
+        if (err) {
+          req.flash("error", err.message);
+          return req.redirect("back");
+        }
+        res.render("./dashboard/editParticipantData", {participant: participant});
+      });
+    }else {
+      req.flash("error", "You dont have the admin permissions")
+      return res.redirect("/dashboard");
+    }
+  } catch (e) {
     req.flash("error", "You dont have the admin permissions")
     return res.redirect("/dashboard");
   }
+
 });
 // Edit Participant Data: PUT
 app.put("/dashboard/editData/:id", isLogin,upload.array("images"),async (req, res) => {
   let participantId = req.params.id;
   let partData = await Participant.findById(participantId);
 
-  let interestedFields = "";
+  let interestedFields = [];
   if (req.body.checked) {
     interestedFields = req.body.checked;
-
   }else {
     req.flash("error", "Please select at least one of the Interested products section");
     return res.redirect("/dashboard/editData/" + participantId);
+  }
+  if(req.body.otherInterested) {
+    interestedFields.push(req.body.otherInterested);
   }
   // selector companyMainActivity
   let companyMainActivity = "";
@@ -615,6 +625,7 @@ app.put("/dashboard/editData/:id", isLogin,upload.array("images"),async (req, re
     city: req.body.city,
     title: title,
     interestedField: interestedFields,
+    otherInterested: req.body.otherInterested,
     purchasingRole: req.body.rolePurchasing,
     companyMainActivity: companyMainActivity,
     note: req.body.note
@@ -633,7 +644,7 @@ app.put("/dashboard/editData/:id", isLogin,upload.array("images"),async (req, re
       await participant.updateOne( {$pull: { images: { filename: {$in : req.body.deleteImages } } } } );
     }
     req.flash("success", "Data Updated successfully");
-    res.redirect("back");
+    res.redirect("/dashboard/editData/" + participantId);
   }else {
     req.flash("error", "You dont have the admin permissions")
     return res.redirect("/dashboard");
@@ -723,6 +734,10 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
     req.flash("error", "You dont have the admin permissions")
     return res.redirect("/dashboard");
   }
+});
+app.get("*", (req, res) => {
+  req.flash("error", "Wrong url, You can't react to this page");
+  res.redirect("back");
 });
 
 function isLogin(req, res, next) {
