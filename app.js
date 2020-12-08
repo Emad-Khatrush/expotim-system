@@ -34,17 +34,17 @@ app.use(flash());
 
 const dbURL = process.env.DB_URL;
 // local mongoose
-// mongoose.connect("mongodb://localhost/data-system",
-// { useNewUrlParser: true,
-//   useUnifiedTopology: true }, function(){
-//     console.log("mongodb connected");
-//   });
+mongoose.connect("mongodb://localhost/data-system",
+{ useNewUrlParser: true,
+  useUnifiedTopology: true }, function(){
+    console.log("mongodb connected");
+  });
   // connect mongoose
-  mongoose.connect(dbURL,
-  { useNewUrlParser: true,
-    useUnifiedTopology: true }, function(){
-      console.log("mongodb connected");
-    });
+  // mongoose.connect(dbURL,
+  // { useNewUrlParser: true,
+  //   useUnifiedTopology: true }, function(){
+  //     console.log("mongodb connected");
+  //   });
 
 
 // passport configurations
@@ -163,7 +163,7 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
   let interestedFields = [];
   if (req.body.checked) {
     interestedFields = req.body.checked;
-  }else {
+  }else if(!req.body.otherInterested) {
     req.flash("error", "Please select at least one of the Interested products section");
     return res.redirect("/dashboard/add-data")
   }
@@ -737,7 +737,7 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
 });
 app.get("*", (req, res) => {
   req.flash("error", "Wrong url, You can't react to this page");
-  res.redirect("back");
+  res.redirect("/dashboard");
 });
 
 function isLogin(req, res, next) {
