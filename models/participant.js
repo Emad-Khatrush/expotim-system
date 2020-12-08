@@ -22,7 +22,7 @@ var participant = new mongoose.Schema({
   city: {type: String, required: true},
   title: {type: String, required: true},
   interestedField: {type: Array, required: true},
-  otherInterested: {type: String, required: true},
+  otherInterested: String,
   date: {type: String, required: true},
   note: String,
   purchasingRole: {type: String, required: true} ,
