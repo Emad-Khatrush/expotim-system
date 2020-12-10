@@ -19,7 +19,10 @@ var express               = require("express"),
     multer                = require('multer'),
     schedule              = require('node-schedule'),
     mongoSanitize         = require('express-mongo-sanitize'),
-    ftpClient = require('ftp-client');
+    ftpClient             = require('ftp-client'),
+    fs                    = require('fs'),
+    http                  = require('http'),
+    Jimp                  = require('jimp');
 const helmet = require("helmet");
 const { storage, cloudinary } = require('./cloudinary');
 var upload                = multer({ storage });
@@ -34,17 +37,17 @@ app.use(flash());
 
 const dbURL = process.env.DB_URL;
 // local mongoose
-// mongoose.connect("mongodb://localhost/data-system",
-// { useNewUrlParser: true,
-//   useUnifiedTopology: true }, function(){
-//     console.log("mongodb connected");
-//   });
+mongoose.connect("mongodb://localhost/data-system",
+{ useNewUrlParser: true,
+  useUnifiedTopology: true }, function(){
+    console.log("mongodb connected");
+  });
   // connect mongoose
-  mongoose.connect(dbURL,
-  { useNewUrlParser: true,
-    useUnifiedTopology: true }, function(){
-      console.log("mongodb connected");
-    });
+  // mongoose.connect(dbURL,
+  // { useNewUrlParser: true,
+  //   useUnifiedTopology: true }, function(){
+  //     console.log("mongodb connected");
+  //   });
 
 
 // passport configurations
@@ -85,7 +88,7 @@ app.use(async function(req,res,next){
 app.get("/", function(req,res){
   res.redirect("/login");
 })
-app.get("/login", function(req,res){
+app.get("/login", async function(req,res){
   // var userData = new User({
   //   username: "expotim@expotim.com",
   //   firstName: "#",
@@ -129,6 +132,7 @@ app.get("/login", function(req,res){
   // });
   res.render("./Login/login");
 })
+
 // Login Route: POST
 app.post("/login",
 passport.authenticate("local",{
@@ -726,10 +730,10 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
     "attachment; filename=" + "participants.xlsx"
   );
 
-        workbook.xlsx.write(res)
-        .then(function () {
-        res.status(200).end();
-        });
+    workbook.xlsx.write(res)
+    .then(function () {
+    res.status(200).end();
+    });
   }else {
     req.flash("error", "You dont have the admin permissions")
     return res.redirect("/dashboard");
