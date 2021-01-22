@@ -148,7 +148,7 @@ app.get("/logout",function(req,res){
   res.redirect("/login");
 });
 app.get("/registervisitor", (req ,res ) => {
-  res.render("./dashboard/index");
+  res.render("./dashboard/registerVisitor");
 });
 app.post("/registervisitor", async (req ,res ) => {
 
