@@ -147,6 +147,47 @@ app.get("/logout",function(req,res){
   req.logout();
   res.redirect("/login");
 });
+app.get("/registervisitor", (req ,res ) => {
+  res.render("./dashboard/index");
+});
+app.post("/registervisitor", async (req ,res ) => {
+
+    const emadUser = await User.findOne({_id: "5fa92ab4290b984b3091b5af"});
+    console.log(emadUser);
+    var personData = new Participant({
+      user: emadUser,
+      company: req.body.companyName || "#",
+      email: req.body.email || "NoMail@Mail.com",
+      brandName: "#",
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      companyAdress: req.body.city,
+      companiesWorkedwith: "#",
+      countriesParticipated: "#",
+      personLanguages: "AR",
+      phone: req.body.phone,
+      businessNumber: 0,
+      city: req.body.city,
+      title: "CEO",
+      interestedField: "All Products",
+      otherInterested: "",
+      purchasingRole: "Buyer",
+      companyMainActivity: "Constructor",
+      date: new Date().toLocaleDateString('tr-TR'),
+      note: ""
+    })
+
+    await personData.save(function(err, data){
+      if (err) {
+        req.flash("error", "حدث خطأ اثناء التسجيل، الرجاء المحاولة مرة اخرى")
+        res.redirect("/registervisitor");
+      }else {
+        req.flash("success", "تم تسجيلك بنجاح، سيتم التواصل معك قريبا")
+        res.redirect("/registervisitor");
+      }
+    });
+
+});
 
 // dashboard Route
 app.get("/dashboard",isLogin ,function(req,res){
