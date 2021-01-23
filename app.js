@@ -153,7 +153,6 @@ app.get("/registervisitor", (req ,res ) => {
 app.post("/registervisitor", async (req ,res ) => {
 
     const emadUser = await User.findOne({_id: "5fa92ab4290b984b3091b5af"});
-    console.log(emadUser);
     var personData = new Participant({
       user: emadUser,
       company: req.body.companyName || "#",
