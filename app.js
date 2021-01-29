@@ -89,8 +89,9 @@ app.get("/", function(req,res){
   res.redirect("/login");
 })
 app.get("/login", async function(req,res){
+  
   // var userData = new User({
-  //   username: "expotim@expotim.com",
+  //   username: "emad.khatrush@hotmail.com",
   //   firstName: "#",
   //   lastName: "#",
   //   title: "#",
@@ -172,7 +173,7 @@ app.post("/registervisitor", async (req ,res ) => {
       otherInterested: "",
       purchasingRole: "Buyer",
       companyMainActivity: "Constructor",
-      date: new Date().toLocaleDateString('tr-TR'),
+      date: new Date().toLocaleDateString(),
       note: ""
     })
 
@@ -185,6 +186,46 @@ app.post("/registervisitor", async (req ,res ) => {
         res.redirect("/registervisitor");
       }
     });
+
+});
+app.get("/registervisitor/en", (req ,res ) => {
+  res.render("./dashboard/registerVisitorEN");
+});
+app.post("/registerVisitor/en", (req, res) => {
+  var transporter = nodemailer.createTransport({
+  service: 'hotmail',
+  auth: {
+    user: 'expotimbuildinglibya@hotmail.com',
+    pass: process.env.HOTMAIL_PASS
+    }
+  });
+
+  var mailOptions = {
+    from: 'expotimbuildinglibya@hotmail.com',
+    to: 'info@buildlibyaexpo.com',
+    subject: `You Got A New ${req.body.reasonForApp}`,
+    html: `<h3> Message from ${req.body.fullName}</h3> <br>
+            <p><strong> Reason For Application: </strong> ${req.body.reasonForApp}</p>
+            <p><strong> Company Name:</strong> ${req.body.companyName || "Empty"} </p>
+            <p><strong> Full Name:</strong> ${req.body.fullName} </p>
+            <p><strong> Email: </strong>${req.body.email || "Empty"} </p>
+            <p><strong> Phone: </strong>${req.body.phone}</p>
+            <p><strong> Country: </strong> ${req.body.country} </p>
+            <p><strong> City: </strong> ${req.body.city} </p>
+            <p><strong> Interested in our other construction shows?:</strong> ${req.body.interestedShow}</p>`
+  };
+
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+      req.flash("error", error.message);
+      res.redirect("/registervisitor/en");
+    } else {
+      console.log('Email sent: ' + info.response);
+      req.flash("success", "You have been successfully registered, we will contact you soon.");
+      res.redirect("/registervisitor/en");
+    }
+  });
 
 });
 
@@ -250,7 +291,7 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
     otherInterested: req.body.otherInterested,
     purchasingRole: req.body.rolePurchasing,
     companyMainActivity: companyMainActivity,
-    date: new Date().toLocaleDateString('tr-TR'),
+    date: new Date().toLocaleDateString(),
     note: req.body.note
   })
   personData.images = images;
@@ -281,24 +322,24 @@ app.get("/dashboard/myreports", isLogin,async function(req,res){
     // Get last week data
     let weeklyData = [];
     for (let i = 0; i < 7; i++) {
-      weeklyData.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+      weeklyData.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
     }
     let parseWeeklyData = Object.values(weeklyData).flat();
-    let lastWeekDate = new Date(new Date() - 6 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+    let lastWeekDate = new Date(new Date() - 6 * 60 * 60 * 24 * 1000).toLocaleDateString();
     // get last month data
     let monthlyData = [];
     for (let i = 0; i < 30; i++) {
-      monthlyData.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+      monthlyData.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
     }
     let parseMonthlyData = Object.values(monthlyData).flat();
-    let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+    let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString();
 
     Participant.find({}, function(err, fullData){
       if (err) {
         req.flash("error", err.message);
         res.redirect("back")
       }else {
-        var todayDate = new Date().toLocaleDateString('tr-TR');
+        var todayDate = new Date().toLocaleDateString();
         Participant.find({date: todayDate}, function(err, dailyData){
           if (err) {
             req.flash("error", err.message);
@@ -324,7 +365,7 @@ app.get("/dashboard/myreports", isLogin,async function(req,res){
         console.log(err);
         res.redirect("back")
       }else {
-        var todayDate = new Date().toLocaleDateString('tr-TR');
+        var todayDate = new Date().toLocaleDateString();
         Participant.find({user: req.user, date: todayDate}, function(err, dailyData){
           if (err) {
             console.log(err);
@@ -386,14 +427,14 @@ app.post("/dashboard/contact", isLogin,function(req,res){
     var transporter = nodemailer.createTransport({
     service: 'hotmail',
     auth: {
-      user: 'qwe.emad@hotmail.com',
+      user: 'expotimbuildinglibya@hotmail.com',
       pass: process.env.HOTMAIL_PASS
       }
     });
 
     var mailOptions = {
-      from: 'emad.suleiman@expotim.com',
-      to: 'medokhatrush@gmail.com',
+      from: 'expotimbuildinglibya@hotmail.com',
+      to: 'info@buildlibyaexpo.com',
       subject: req.body.subject,
       html: `<h3> Message from ${req.user.firstName} ${req.user.lastName}</h3> <br> <p> ${req.body.note} <h3>Contact Info: ${req.user.username} </h3></p>`
     };
@@ -523,19 +564,19 @@ app.get("/dashboard/team/:id", isLogin, (req, res) => {
         // Get last week data
         let weeklyData = [];
         for (let i = 0; i < 7; i++) {
-          weeklyData.push(await Participant.find({user: employee, date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+          weeklyData.push(await Participant.find({user: employee, date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
         }
         let parseWeeklyData = Object.values(weeklyData).flat();
-        let lastWeekDate = new Date(new Date() - 6 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+        let lastWeekDate = new Date(new Date() - 6 * 60 * 60 * 24 * 1000).toLocaleDateString();
         // get last month data
         let monthlyData = [];
         for (let i = 0; i < 30; i++) {
-          monthlyData.push(await Participant.find({ user: employee,date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+          monthlyData.push(await Participant.find({ user: employee,date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
         }
         let parseMonthlyData = Object.values(monthlyData).flat();
-        let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR');
+        let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString();
 
-        var todayDate = new Date().toLocaleDateString('tr-TR');
+        var todayDate = new Date().toLocaleDateString();
         Participant.find({user: employee, date: todayDate}, function(err, dailyData){
           if (err) {
             req.flash("error", err.message);
@@ -701,16 +742,16 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
     if (req.params.typeData === "fullData") {
       participants = await Participant.find({});
     }else if (req.params.typeData === "dailyData") {
-      var todayDate = new Date().toLocaleDateString('tr-TR');
+      var todayDate = new Date().toLocaleDateString();
       participants = await Participant.find({date: todayDate});
     }else if(req.params.typeData === "weeklyData"){
       for (let i = 0; i < 7; i++) {
-        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
       }
       participants = Object.values(participants).flat();
     }else if(req.params.typeData === "monthlyData"){
       for (let i = 0; i < 30; i++) {
-        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString('tr-TR')}));
+        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
       }
       participants = Object.values(participants).flat();
     }else {
