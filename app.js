@@ -89,7 +89,7 @@ app.get("/", function(req,res){
   res.redirect("/login");
 })
 app.get("/login", async function(req,res){
-  
+
   // var userData = new User({
   //   username: "emad.khatrush@hotmail.com",
   //   firstName: "#",
@@ -174,7 +174,7 @@ app.post("/registervisitor", async (req ,res ) => {
       purchasingRole: "Buyer",
       companyMainActivity: "Constructor",
       date: new Date().toLocaleDateString(),
-      note: ""
+      note: "I want to be a " + req.body.reasonForApp
     })
 
     await personData.save(function(err, data){
