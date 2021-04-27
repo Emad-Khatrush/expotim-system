@@ -42,7 +42,7 @@ const dbURL = process.env.DB_URL;
 //   useUnifiedTopology: true }, function(){
 //     console.log("mongodb connected");
 //   });
-  // connect mongoose
+  // connect mongoos
   mongoose.connect(dbURL,
   { useNewUrlParser: true,
     useUnifiedTopology: true }, function(){
