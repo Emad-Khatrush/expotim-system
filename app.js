@@ -88,6 +88,17 @@ app.use(async function(req,res,next){
 app.get("/", function(req,res){
   res.redirect("/login");
 })
+app.get("/api/:apiKey", async function(req,res){
+  const apiKey = req.params.apiKey;
+  const participants = await Participant.find({});
+
+  if(apiKey === "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01") {
+    res.status(200).send({ participants });
+  } else {
+    res.send("error");
+  }
+  
+})
 app.get("/login", async function(req,res){
 
   // var userData = new User({
