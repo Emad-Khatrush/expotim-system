@@ -22,7 +22,8 @@ var express               = require("express"),
     ftpClient             = require('ftp-client'),
     fs                    = require('fs'),
     http                  = require('http'),
-    Jimp                  = require('jimp');
+    Jimp                  = require('jimp'),
+    axios                 = require('axios');
 const helmet = require("helmet");
 const { storage, cloudinary } = require('./cloudinary');
 var upload                = multer({ storage });
@@ -88,17 +89,37 @@ app.use(async function(req,res,next){
 app.get("/", function(req,res){
   res.redirect("/login");
 })
-app.get("/api/:apiKey", async function(req,res){
-  const apiKey = req.params.apiKey;
-  const participants = await Participant.find({});
+// app.get("/api/remote-register", async (req, res) => {
+//   // send data to fairBuildingLibya
+//   const participants = await Participant.find({});
+//   for (let i = 4500; i < participants.length; i++) {
+//     await axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+//     {
+//       visitor_phone: participants[i].phone,
+//       visitor_name: participants[i].firstName,
+//       visitor_lastName: participants[i].lastName,
+//       visitor_email: participants[i].email,
+//       language: "AR",
+//       token: null,
+//       dynamic: null
+//     },
+//     {
+//       headers: {
+//         "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+//         "Content-Type": "application/json",
+//         "Accept": "application/json"
+//       }
+//     })
+//     .then( response => {
+//       console.log(response);
+//     })
+//     .catch( err => {
+//       console.log(err);
+//     })
+//   }
+// res.send("finished")
+// });
 
-  if(apiKey === "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01") {
-    res.status(200).send({ participants });
-  } else {
-    res.send("error");
-  }
-  
-})
 app.get("/login", async function(req,res){
 
   // var userData = new User({
@@ -252,9 +273,7 @@ app.get("/dashboard/add-data", isLogin, async function(req,res){
 
 // Add Data Route: POST
 app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(req,res){
-  console.log("--------");
-  console.log(req.body);
-  console.log("--------");
+
   // looping of interested Fields and inserted in a string
   let interestedFields = [];
   if (req.body.checked) {
@@ -322,6 +341,31 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
       });
       expEdit.cancel();
       });
+      // send data to Building Libya fairs
+        axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+        {
+          visitor_phone: req.body.phone,
+          visitor_name: req.body.firstName,
+          visitor_lastName: req.body.lastName,
+          visitor_email: req.body.email,
+          language: "AR",
+          token: null,
+          dynamic: interestedFields
+        },
+        {
+          headers: {
+            "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        })
+        .then( res => {
+          console.log(res);
+        })
+        .catch( err => {
+          console.log(err);
+        })
+
       req.flash("success", "Data added successfully")
       res.redirect("/dashboard/add-data");
     }
