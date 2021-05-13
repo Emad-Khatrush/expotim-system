@@ -38,17 +38,17 @@ app.use(flash());
 
 const dbURL = process.env.DB_URL;
 // local mongoose
-mongoose.connect("mongodb://localhost/data-system",
-{ useNewUrlParser: true,
-  useUnifiedTopology: true }, function(){
-    console.log("mongodb connected");
-  });
+// mongoose.connect("mongodb://localhost/data-system",
+// { useNewUrlParser: true,
+//   useUnifiedTopology: true }, function(){
+//     console.log("mongodb connected");
+//   });
   // connect mongoose
-  // mongoose.connect(dbURL,
-  // { useNewUrlParser: true,
-  //   useUnifiedTopology: true }, function(){
-  //     console.log("mongodb connected");
-  //   });
+  mongoose.connect(dbURL,
+  { useNewUrlParser: true,
+    useUnifiedTopology: true }, function(){
+      console.log("mongodb connected");
+    });
 
 
 // passport configurations
