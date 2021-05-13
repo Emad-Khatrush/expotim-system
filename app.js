@@ -38,17 +38,17 @@ app.use(flash());
 
 const dbURL = process.env.DB_URL;
 // local mongoose
-// mongoose.connect("mongodb://localhost/data-system",
-// { useNewUrlParser: true,
-//   useUnifiedTopology: true }, function(){
-//     console.log("mongodb connected");
-//   });
+mongoose.connect("mongodb://localhost/data-system",
+{ useNewUrlParser: true,
+  useUnifiedTopology: true }, function(){
+    console.log("mongodb connected");
+  });
   // connect mongoose
-  mongoose.connect(dbURL,
-  { useNewUrlParser: true,
-    useUnifiedTopology: true }, function(){
-      console.log("mongodb connected");
-    });
+  // mongoose.connect(dbURL,
+  // { useNewUrlParser: true,
+  //   useUnifiedTopology: true }, function(){
+  //     console.log("mongodb connected");
+  //   });
 
 
 // passport configurations
@@ -214,7 +214,24 @@ app.post("/registervisitor", async (req ,res ) => {
         req.flash("error", "حدث خطأ اثناء التسجيل، الرجاء المحاولة مرة اخرى")
         res.redirect("/registervisitor");
       }else {
-        req.flash("success", "تم تسجيلك بنجاح، سيتم التواصل معك قريبا")
+        // send data to Building Libya fairs
+        axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+        {
+          visitor_phone: req.body.phone,
+          visitor_name: req.body.firstName,
+          visitor_lastName: req.body.lastName,
+          visitor_email: req.body.email || "NoMail@Mail.com",
+          language: "AR",
+          token: null
+        },
+        {
+          headers: {
+            "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+        req.flash("success", "تم تسجيلك بنجاح، سيتم التواصل معك قريبا");
         res.redirect("/registervisitor");
       }
     });
@@ -246,6 +263,23 @@ app.post("/registerVisitor/en", (req, res) => {
             <p><strong> City: </strong> ${req.body.city} </p>
             <p><strong> Interested in our other construction shows?:</strong> ${req.body.interestedShow}</p>`
   };
+  // send data to Building Libya fairs
+  axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+  {
+    visitor_phone: req.body.phone,
+    visitor_name: req.body.firstName,
+    visitor_lastName: req.body.lastName,
+    visitor_email: req.body.email || "NoMail@Mail.com",
+    language: "AR",
+    token: null
+  },
+  {
+    headers: {
+      "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    }
+  });
 
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
