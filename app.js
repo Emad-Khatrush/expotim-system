@@ -12,6 +12,7 @@ var express               = require("express"),
     flash                 = require("connect-flash"),
     User                  = require("./models/user"),
     Participant           = require("./models/participant"),
+    IraqBuildParticipant  = require("./models/iraqBuildParticipant"),
     methodOverride        = require('method-override'),
     excel                 = require("exceljs"),
     nodemailer            = require('nodemailer'),
@@ -20,9 +21,6 @@ var express               = require("express"),
     schedule              = require('node-schedule'),
     mongoSanitize         = require('express-mongo-sanitize'),
     ftpClient             = require('ftp-client'),
-    fs                    = require('fs'),
-    http                  = require('http'),
-    Jimp                  = require('jimp'),
     axios                 = require('axios');
 const helmet = require("helmet");
 const { storage, cloudinary } = require('./cloudinary');
@@ -186,7 +184,7 @@ app.get("/registervisitor", (req ,res ) => {
 app.post("/registervisitor", async (req ,res ) => {
 
     const emadUser = await User.findOne({_id: "5fa92ab4290b984b3091b5af"});
-    var personData = new Participant({
+    var personData = new IraqBuildParticipant({
       user: emadUser,
       company: req.body.companyName || "#",
       email: req.body.email || "NoMail@Mail.com",
@@ -206,31 +204,31 @@ app.post("/registervisitor", async (req ,res ) => {
       purchasingRole: "Buyer",
       companyMainActivity: "Constructor",
       date: new Date().toLocaleDateString(),
-      note: "I want to be a " + req.body.reasonForApp
+      note: "I want to be a " + req.body.reasonForApp + "------ " + req.body.note,
     })
 
     await personData.save(function(err, data){
       if (err) {
-        req.flash("error", "حدث خطأ اثناء التسجيل، الرجاء المحاولة مرة اخرى")
+        req.flash("error", "حدث خطأ اثناء التسجيل، الرجاء المحاولة مرة اخرى لاحقا")
         res.redirect("/registervisitor");
       }else {
         // send data to Building Libya fairs
-        axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
-        {
-          visitor_phone: req.body.phone,
-          visitor_name: req.body.firstName,
-          visitor_lastName: req.body.lastName,
-          visitor_email: req.body.email || "NoMail@Mail.com",
-          language: "AR",
-          token: null
-        },
-        {
-          headers: {
-            "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        });
+        // axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+        // {
+        //   visitor_phone: req.body.phone,
+        //   visitor_name: req.body.firstName,
+        //   visitor_lastName: req.body.lastName,
+        //   visitor_email: req.body.email || "NoMail@Mail.com",
+        //   language: "AR",
+        //   token: null
+        // },
+        // {
+        //   headers: {
+        //     "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+        //     "Content-Type": "application/json",
+        //     "Accept": "application/json"
+        //   }
+        // });
         req.flash("success", "تم تسجيلك بنجاح، سيتم التواصل معك قريبا");
         res.redirect("/registervisitor");
       }
@@ -264,22 +262,22 @@ app.post("/registerVisitor/en", (req, res) => {
             <p><strong> Interested in our other construction shows?:</strong> ${req.body.interestedShow}</p>`
   };
   // send data to Building Libya fairs
-  axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
-  {
-    visitor_phone: req.body.phone,
-    visitor_name: req.body.firstName,
-    visitor_lastName: req.body.lastName,
-    visitor_email: req.body.email || "NoMail@Mail.com",
-    language: "AR",
-    token: null
-  },
-  {
-    headers: {
-      "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    }
-  });
+  // axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+  // {
+  //   visitor_phone: req.body.phone,
+  //   visitor_name: req.body.firstName,
+  //   visitor_lastName: req.body.lastName,
+  //   visitor_email: req.body.email || "NoMail@Mail.com",
+  //   language: "AR",
+  //   token: null
+  // },
+  // {
+  //   headers: {
+  //     "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+  //     "Content-Type": "application/json",
+  //     "Accept": "application/json"
+  //   }
+  // });
 
   transporter.sendMail(mailOptions, function(error, info){
     if (error) {
@@ -376,29 +374,29 @@ app.post("/dashboard/add-data",isLogin ,upload.array("image"), async function(re
       expEdit.cancel();
       });
       // send data to Building Libya fairs
-        axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
-        {
-          visitor_phone: req.body.phone,
-          visitor_name: req.body.firstName,
-          visitor_lastName: req.body.lastName,
-          visitor_email: req.body.email,
-          language: "AR",
-          token: null,
-          dynamic: interestedFields
-        },
-        {
-          headers: {
-            "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          }
-        })
-        .then( res => {
-          console.log(res);
-        })
-        .catch( err => {
-          console.log(err);
-        })
+        // axios.post('https://fairbuildlibyaexpo.endlessfairs.com/api/remote-register',
+        // {
+        //   visitor_phone: req.body.phone,
+        //   visitor_name: req.body.firstName,
+        //   visitor_lastName: req.body.lastName,
+        //   visitor_email: req.body.email,
+        //   language: "AR",
+        //   token: null,
+        //   dynamic: interestedFields
+        // },
+        // {
+        //   headers: {
+        //     "X-API-KEY": "1tPpGDHanqxZbwNQE8oLVlt42AIBPi01",
+        //     "Content-Type": "application/json",
+        //     "Accept": "application/json"
+        //   }
+        // })
+        // .then( res => {
+        //   console.log(res);
+        // })
+        // .catch( err => {
+        //   console.log(err);
+        // })
 
       req.flash("success", "Data added successfully")
       res.redirect("/dashboard/add-data");
@@ -423,13 +421,13 @@ app.get("/dashboard/myreports", isLogin,async function(req,res){
     let parseMonthlyData = Object.values(monthlyData).flat();
     let lastMonthDate = new Date(new Date() - 29 * 60 * 60 * 24 * 1000).toLocaleDateString();
 
-    Participant.find({}, function(err, fullData){
+    IraqBuildParticipant.find({}, function(err, fullData){
       if (err) {
         req.flash("error", err.message);
         res.redirect("back")
       }else {
         var todayDate = new Date().toLocaleDateString();
-        Participant.find({date: todayDate}, function(err, dailyData){
+        IraqBuildParticipant.find({date: todayDate}, function(err, dailyData){
           if (err) {
             req.flash("error", err.message);
             res.redirect("back");
@@ -449,13 +447,13 @@ app.get("/dashboard/myreports", isLogin,async function(req,res){
       }
     })
   }else{
-    Participant.find({user: req.user}, function(err, fullData){
+    IraqBuildParticipant.find({user: req.user}, function(err, fullData){
       if (err) {
         console.log(err);
         res.redirect("back")
       }else {
         var todayDate = new Date().toLocaleDateString();
-        Participant.find({user: req.user, date: todayDate}, function(err, dailyData){
+        IraqBuildParticipant.find({user: req.user, date: todayDate}, function(err, dailyData){
           if (err) {
             console.log(err);
             res.redirect("back")
@@ -829,18 +827,18 @@ app.get('/dashboard/download/:typeData/excelsheet',isLogin ,async function(req, 
   if (req.user.isAdmin) {
     let participants = [];
     if (req.params.typeData === "fullData") {
-      participants = await Participant.find({});
+      participants = await IraqBuildParticipant.find({});
     }else if (req.params.typeData === "dailyData") {
       var todayDate = new Date().toLocaleDateString();
-      participants = await Participant.find({date: todayDate});
+      participants = await IraqBuildParticipant.find({date: todayDate});
     }else if(req.params.typeData === "weeklyData"){
       for (let i = 0; i < 7; i++) {
-        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
+        participants.push(await IraqBuildParticipant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
       }
       participants = Object.values(participants).flat();
     }else if(req.params.typeData === "monthlyData"){
       for (let i = 0; i < 30; i++) {
-        participants.push(await Participant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
+        participants.push(await IraqBuildParticipant.find({date: new Date(new Date() - i * 60 * 60 * 24 * 1000).toLocaleDateString()}));
       }
       participants = Object.values(participants).flat();
     }else {

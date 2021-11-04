@@ -174,8 +174,7 @@ input::placeholder{
    #BACKGROUND
    ========================================================================== */
 .bg-blue {
-  background: rgb(63,94,251);
-background: radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%);
+  background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(255,219,38,1) 0%, rgba(227,236,17,1) 42%, rgba(255,191,50,1) 100%);
 }
 
 /* ==========================================================================
@@ -458,7 +457,7 @@ input {
 }
 
 .card-1 .card-heading {
-  background: url("/img/build-libya-banner.jpg") center center/cover no-repeat;
+  background: url("/img/iraqbuild.jpg") center center/cover no-repeat;
   padding-top: 240px;
 }
 
