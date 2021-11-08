@@ -249,7 +249,7 @@ app.post("/registerVisitor/en", (req, res) => {
 
   var mailOptions = {
     from: 'expotimbuildinglibya@hotmail.com',
-    to: 'info@buildlibyaexpo.com',
+    to: 'qwe.emad@hotmail.com',
     subject: `You Got A New ${req.body.reasonForApp}`,
     html: `<h3> Message from ${req.body.fullName}</h3> <br>
             <p><strong> Reason For Application: </strong> ${req.body.reasonForApp}</p>
